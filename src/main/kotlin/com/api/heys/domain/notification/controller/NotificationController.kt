@@ -24,11 +24,10 @@ class NotificationController(
         return ResponseEntity.ok(CommonApiResponse(data = notifications))
     }
 
-    @GetMapping
+    @GetMapping("/new")
     @Operation(summary = "새로운 알림 여부 조회", description = "새로운 알림 여부 조회 API")
     fun isNewNotification(@Schema(hidden = true) @RequestHeader(HttpHeaders.AUTHORIZATION) bearer: String)
             : ResponseEntity<CommonApiResponse<Boolean>> {
-
         val hasNewNotification = notificationService.hasNewNotificaiton(bearer)
         return ResponseEntity.ok(CommonApiResponse(data = hasNewNotification))
     }
