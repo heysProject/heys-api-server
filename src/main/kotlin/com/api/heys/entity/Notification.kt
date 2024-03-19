@@ -30,6 +30,6 @@ class Notification(
         val channels : Channels? = null,
 
         @Column(name = "read_at")
-        val readAt : LocalDateTime? = null
+        var readAt : LocalDateTime? = null
 
 ): BaseIdentityDate(), Serializable

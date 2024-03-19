@@ -8,6 +8,8 @@ import com.api.heys.domain.notification.vo.NotificationRequestVo
 import com.api.heys.domain.notification.vo.NotificationResponseVo
 import com.api.heys.domain.user.repository.UserRepository
 import com.api.heys.entity.Notification
+import com.api.heys.exception.CustomException
+import com.api.heys.exception.type.UserExceptionType.*
 import com.api.heys.helpers.DateHelpers
 import com.api.heys.utils.JwtUtil
 import com.api.heys.utils.MessageUtils
@@ -17,6 +19,7 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDateTime
 
 @Service
 @Transactional(readOnly = true)
@@ -81,6 +84,20 @@ class NotificationService(
                 isRead = it.readAt != null
             )
         }.toList()
+    }
+
+    fun hasNewNotificaiton(token : String) : Boolean {
+        val users = userUtil.findUserByToken(token, jwtUtil, userRepository) ?: throw CustomException(NOT_EXIST_USER)
+        return notificationRepository.findNewNotification(users).isNotEmpty()
+    }
+
+    @Transactional
+    fun readNewNotification(token : String) {
+        val users = userUtil.findUserByToken(token, jwtUtil, userRepository) ?: throw CustomException(NOT_EXIST_USER)
+        val newNotifications = notificationRepository.findNewNotification(users)
+        for (newNotification in newNotifications) {
+            newNotification.readAt = LocalDateTime.now()
+        }
     }
 
 }
